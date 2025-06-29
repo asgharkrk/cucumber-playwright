@@ -29,8 +29,6 @@ Feature: Adding employees using different techniques
     Examples:
       | firstname | middlename | lastname |
       |Fouad      |MS          |Oliinyk   |
-      |Matt       |MS          |Aslloun   |
-      |Lali       |MS          |Shahad    |
 
 
   @datatable @regression

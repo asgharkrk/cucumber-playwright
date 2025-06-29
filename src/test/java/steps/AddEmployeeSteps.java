@@ -39,10 +39,7 @@ public class AddEmployeeSteps extends CommonMethods {
         sendText(firstName, addEmployeePage.firstNameLoc);
         sendText(middleName, addEmployeePage.middleNameLoc);
         sendText(lastName, addEmployeePage.lastNameLoc);
-        expectedFN = firstName;
-        expectedMN = middleName;
-        expectedLN = lastName;
-        employeeIDFE = addEmployeePage.employeeId.inputValue();
+
     }
 
     @Then("employee added successfully")
@@ -66,6 +63,10 @@ public class AddEmployeeSteps extends CommonMethods {
         sendText(fn, addEmployeePage.firstNameLoc);
         sendText(mn, addEmployeePage.middleNameLoc);
         sendText(ln, addEmployeePage.lastNameLoc);
+        expectedFN = fn;
+        expectedMN = mn;
+        expectedLN = ln;
+        employeeIDFE = addEmployeePage.employeeId.inputValue();
     }
 
     @When("user enters firstname and middlename and lastname from data table and verify it")
