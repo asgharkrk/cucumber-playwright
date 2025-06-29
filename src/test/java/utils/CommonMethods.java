@@ -1,131 +1,88 @@
 package utils;
 
-import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.devtools.v85.page.Page;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.SelectOption;
 
-
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.Date;
 
 public class CommonMethods extends PageInitializer {
 
-    public static  WebDriver driver;
+    public static Playwright playwright;
+    public static Browser browser;
+    public static BrowserContext context;
+    public static Page page;
+
     public static void openBrowserAndLaunchApplication() throws IOException {
-
-
-        switch (ConfigReader.read("browser")){
+        playwright = Playwright.create();
+        switch (ConfigReader.read("browser")) {
             case "Chrome":
-                ChromeOptions chromeOptions = new ChromeOptions();
-                chromeOptions.addArguments("--headless");
-                driver=new ChromeDriver(chromeOptions);
+                browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false
+                ));
                 break;
-            case "FireFox":
-                driver=new FirefoxDriver();
+            case "Firefox":
+                browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(false));
                 break;
             case "Edge":
-                driver=new EdgeDriver();
+                browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setChannel("msedge").setHeadless(false));
                 break;
             default:
                 throw new RuntimeException("Invalid Browser Name");
         }
-//        impicit wait
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
-        driver.manage().window().maximize();
-        driver.get(ConfigReader.read("url"));
+        context = browser.newContext();
+        page = context.newPage();
+        page.navigate(ConfigReader.read("url"));
         initializePageObjects();
     }
 
-    public static void closeBrowser(){
-        if(driver!=null){
-        driver.quit();
+    public static void closeBrowser() {
+        if (page != null) {
+            page.close();
+        }
+        if (context != null) {
+            context.close();
+        }
+        if (browser != null) {
+            browser.close();
+        }
+        if (playwright != null) {
+            playwright.close();
         }
     }
 
-    public  static  void selectFromDropDown(WebElement dropDown,int index){
-        Select sel=new Select(dropDown);
-        sel.selectByIndex(index);
-    }
-    public  static  void selectFromDropDown(WebElement dropDown,String visibleText){
-        Select sel=new Select(dropDown);
-        sel.selectByVisibleText(visibleText);
+    public static void selectFromDropDown(Locator dropDown, int index) {
+        dropDown.selectOption(new SelectOption().setIndex(index));
     }
 
-    public  static  void selectFromDropDown(String value, WebElement dropDown){
-        Select sel=new Select(dropDown);
-        sel.selectByValue(value);
+    public static void selectFromDropDown(Locator dropDown, String visibleText) {
+        dropDown.selectOption(visibleText);
     }
 
-    public static void sendText(String text,WebElement element){
-//        clear the text box
-        element.clear();
-//        send the text to element
-        element.sendKeys(text);
+    public static void selectFromDropDown(String value, Locator dropDown) {
+        dropDown.selectOption(new SelectOption().setValue(value));
     }
 
-
-    public  static  WebDriverWait getwait(){
-    WebDriverWait wait= new WebDriverWait(driver,Duration.ofSeconds(20));
-    return  wait;
+    public static void sendText(String text, Locator element) {
+        element.fill(text);
     }
 
-    public static void waitForElementToBeClickable(WebElement element){
-        getwait().until(ExpectedConditions.elementToBeClickable(element));
-
-    }
-
-    public static void click(WebElement element){
-        waitForElementToBeClickable(element);
+    public static void click(Locator element) {
         element.click();
     }
 
-    public static byte[] takeScreenshot(String fileName){
-
-        TakesScreenshot ts = (TakesScreenshot) driver;
-        byte[] picBytes = ts.getScreenshotAs(OutputType.BYTES);
-        //it is not going to take another screenshot, instead it will consider picByte
-        //i.e array of byte as a source file for transfer
-        File sourceFile = ts.getScreenshotAs(OutputType.FILE);
-
-        try {
-            FileUtils.copyFile(sourceFile, new File
-                    (Constants.SCREENSHOT_FILEPATH+fileName+
-                            " "+ getTimeStamp("yyyy-MM-dd-HH-mm-ss")+".png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static byte[] takeScreenshot(String fileName) {
+        byte[] picBytes = page.screenshot(new Page.ScreenshotOptions()
+                .setPath(Paths.get(Constants.SCREENSHOT_FILEPATH + fileName + " " + getTimeStamp("yyyy-MM-dd-HH-mm-ss") + ".png"))
+                .setFullPage(true));
         return picBytes;
     }
 
-   public static String getTimeStamp(String pattern){
-
+    public static String getTimeStamp(String pattern) {
         Date date = new Date();
-        //yyyy-MM-dd-hh-mm-ss
-       //dd-MM-yyyy-mm-hh-ss
-       //to get the date in my acceptable format, i need to format it
-       SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-
-       return sdf.format(date);
-
-   }
-   public static JavascriptExecutor getJSExecutor(){
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        return js;
-   }
-
-   public static void jsClick(WebElement element){
-       getJSExecutor().executeScript("arguments[0].click();",element);
-
-   }
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+        return sdf.format(date);
+    }
 
 }

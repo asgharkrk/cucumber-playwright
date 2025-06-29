@@ -1,50 +1,32 @@
 package pages;
 
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
+import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
 import utils.CommonMethods;
 
 public class AddEmployeePage extends CommonMethods {
 
-    //find by class will be used to identify the webelement using id here
-    //firstNameloc is the key which we will call in scripts
-    //object repository is nothing but the locators you keep in page class
+    public Locator firstNameLoc;
+    public Locator middleNameLoc;
+    public Locator lastNameLoc;
+    public Locator saveButton;
+    public Locator photograph;
+    public Locator checkBox;
+    public Locator username;
+    public Locator passwordUser;
+    public Locator confirmPasswordUser;
+    public Locator employeeId;
 
-    @FindBy(id="firstName")
-    public WebElement firstNameLoc;
-
-    @FindBy(id="middleName")
-    public WebElement middleNameLoc;
-
-    @FindBy(id="lastName")
-    public WebElement lastNameLoc;
-
-    @FindBy(id="btnSave")
-    public WebElement saveButton;
-
-    @FindBy(id="photofile")
-    public WebElement photograph;
-
-    @FindBy(id="chkLogin")
-    public WebElement checkBox;
-
-    @FindBy(id="user_name")
-    public WebElement username;
-
-    @FindBy(id="user_password")
-    public WebElement passwordUser;
-
-    @FindBy(id="re_password")
-    public WebElement confirmPasswordUser;
-
-    @FindBy(id= "employeeId")
-    public WebElement employeeId;
-
-    public AddEmployeePage(){
-        PageFactory.initElements(driver,this);
+    public AddEmployeePage() {
+        this.firstNameLoc = page.locator("#firstName");
+        this.middleNameLoc = page.locator("#middleName");
+        this.lastNameLoc = page.locator("#lastName");
+        this.saveButton = page.locator("#btnSave");
+        this.photograph = page.locator("#photofile");
+        this.checkBox = page.locator("#chkLogin");
+        this.username = page.locator("#user_name");
+        this.passwordUser = page.locator("#user_password");
+        this.confirmPasswordUser = page.locator("#re_password");
+        this.employeeId = page.locator("#employeeId");
     }
-
-
-
 }

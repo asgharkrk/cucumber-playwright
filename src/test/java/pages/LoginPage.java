@@ -1,8 +1,7 @@
 package pages;
 
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
+import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
 import utils.CommonMethods;
 import utils.ConfigReader;
 
@@ -10,22 +9,17 @@ import java.io.IOException;
 
 public class LoginPage extends CommonMethods {
 
-    @FindBy(xpath="//*[@id='txtUsername']")
-    public WebElement usernameTextField;
-
-    @FindBy(id="txtPassword")
-    public WebElement passwordTextField;
-
-    @FindBy(id="btnLogin")
-    public WebElement loginButton;
+    public Locator usernameTextField;
+    public Locator passwordTextField;
+    public Locator loginButton;
 
     public void enterUsername() throws IOException {
-        sendText(ConfigReader.read("userName"),loginPage.usernameTextField);
+        sendText(ConfigReader.read("userName"), loginPage.usernameTextField);
     }
 
-    public LoginPage(){
-        PageFactory.initElements(driver, this);
+    public LoginPage() {
+        this.usernameTextField = page.locator("xpath=//*[@id='txtUsername']");
+        this.passwordTextField = page.locator("#txtPassword");
+        this.loginButton = page.locator("#btnLogin");
     }
-
-
 }
