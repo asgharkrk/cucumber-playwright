@@ -21,6 +21,11 @@ public class CommonMethods extends PageInitializer {
             case "Chrome":
                 browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false
                 ));
+                Browser.NewContextOptions contextOptions = new Browser.NewContextOptions();
+                contextOptions.setIgnoreHTTPSErrors(true);
+
+                BrowserContext context = browser.newContext(contextOptions);
+                page = context.newPage();
                 break;
             case "Firefox":
                 browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(false));
